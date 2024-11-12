@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Random;
 
 class Ball extends JPanel implements ActionListener {
@@ -9,14 +11,15 @@ class Ball extends JPanel implements ActionListener {
     int diameter = 50;
 
     // Initial position for ball is randomized within frame
-    int x = random.nextInt(450 - diameter);
-    int y = random.nextInt(450 - diameter);
+    int x = random.nextInt(400 - diameter);
+    int y = random.nextInt(400 - diameter);
 
     int dx = 3; // Horizontal speed x
     int dy = 3; // Horizontal speed y
 
     // Timer to update the ball's position
     Timer timer;
+    Color ballColor = Color.WHITE;
 
     public Ball() {
         // Initialize the timer
@@ -27,13 +30,12 @@ class Ball extends JPanel implements ActionListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        System.out.println("X: " + x);
-        System.out.println("Y: " + y);
 
-        /*
-        TODO: some way to change the color of the ball in frame (maybe)
-         */
-        g.setColor(Color.WHITE);
+        // square for debug
+        g.setColor(Color.RED);
+        g.drawRect(x, y, diameter, diameter);
+
+        g.setColor(ballColor);
         g.fillOval (x, y, diameter, diameter);
     }
 
@@ -70,5 +72,4 @@ class Ball extends JPanel implements ActionListener {
             dy = speed;
         }
     }
-
 }
