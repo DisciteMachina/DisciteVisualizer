@@ -9,14 +9,11 @@ class Ball extends JPanel implements ActionListener {
     int diameter = 50;
 
     // Initial position for ball is randomized within frame
-    int x = random.nextInt(500 - diameter);
-    int y = random.nextInt(500 - diameter);
+    int x = random.nextInt(450 - diameter);
+    int y = random.nextInt(450 - diameter);
 
-    /*
-    TODO: add slider so that the speed can be adjusted in frame
-     */
-    int dx = 7; // Horizontal speed x
-    int dy = 15; // Horizontal speed y
+    int dx = 3; // Horizontal speed x
+    int dy = 3; // Horizontal speed y
 
     // Timer to update the ball's position
     Timer timer;
@@ -30,6 +27,8 @@ class Ball extends JPanel implements ActionListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        System.out.println("X: " + x);
+        System.out.println("Y: " + y);
 
         /*
         TODO: some way to change the color of the ball in frame (maybe)
@@ -40,9 +39,6 @@ class Ball extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        x += dx; // Update x
-        y += dy; // Update y
-
         // Checks if the ball has reached the edge of the frame
         if (x < 0 || x > getWidth() - diameter) {
             dx = -dx; // If so, reverses either the x or y
@@ -50,7 +46,29 @@ class Ball extends JPanel implements ActionListener {
         if (y < 0 || y > getHeight() - diameter) {
             dy = -dy;
         }
+
+        x += dx; // Update x
+        y += dy; // Update y
+
         repaint(); // Repaint the panel to update the ball's position
+    }
+
+    public void setSpeedX(int speed) {
+        // If the ball is moving left, change the speed so that the ball continues left
+        if (dx < 0) {
+            this.dx = -speed;
+        } else {
+            dx = speed;
+        }
+    }
+
+    public void setSpeedY(int speed) {
+        // If the ball is moving right, change the speed so that the ball continues right
+        if (dy < 0) {
+            this.dy = -speed;
+        } else {
+            dy = speed;
+        }
     }
 
 }
