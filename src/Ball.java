@@ -1,78 +1,33 @@
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Random;
 
-class Ball extends JPanel implements ActionListener {
+class Ball  {
     Random random = new Random();
-    int diameter = 50;
+    int diameter = 70;
 
     // Initial position for ball is randomized within frame
-    int x = random.nextInt(400 - diameter);
-    int y = random.nextInt(700 - diameter);
+    double x = random.nextInt(300 - diameter);
+    double y = random.nextInt(500 - diameter);
 
-    int dx = 3; // Horizontal speed x
-    int dy = 3; // Horizontal speed y
+    double dx = 5; // Horizontal speed x
+    double dy = 5; // Horizontal speed y
 
-    // Timer to update the ball's position
-    Timer timer;
-
-    public Ball() {
-        // Initialize the timer
-        timer = new Timer(10, this);
-        timer.start();
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        // square for debug
-        /*
-        g.setColor(Color.RED);
-        g.drawRect(x, y, diameter, diameter);
-         */
-
-        g.setColor(Color.WHITE);
-        g.fillOval (x, y, diameter, diameter);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // Checks if the ball has reached the edge of the frame
-        if (x < 0 || x > getWidth() - diameter) {
-            dx = -dx; // If so, reverses either the x or y
+    // Update ball position
+    public void updatePosition(int panelWidth, int panelHeight) {
+        if (x < 0 || x > panelWidth - diameter) {
+            dx = -dx;
         }
-        if (y < 0 || y > getHeight() - diameter) {
+        if (y < 0 || y > panelHeight - diameter) {
             dy = -dy;
         }
 
-        x += dx; // Update x
-        y += dy; // Update y
-
-        repaint(); // Repaint the panel to update the ball's position
+        x += dx;
+        y += dy;
     }
 
-    public void setSpeedX(int speed) {
-        // If the ball is moving left, change the speed so that the ball continues left
-        if (dx < 0) {
-            this.dx = -speed;
-        } else {
-            dx = speed;
-        }
-    }
-
-    public void setSpeedY(int speed) {
-        // If the ball is moving right, change the speed so that the ball continues right
-        if (dy < 0) {
-            this.dy = -speed;
-        } else {
-            dy = speed;
-        }
-    }
-
-    public void setDiameter(int diameter) {
-        this.diameter = diameter * 10;
+    // Draw the ball
+    public void draw(Graphics g) {
+        g.setColor(Color.WHITE);
+        g.fillOval((int) x, (int) y, diameter, diameter);
     }
 }
