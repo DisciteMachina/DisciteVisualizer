@@ -61,4 +61,16 @@ class Ball  {
     public double getVerticalSpeed() {
         return dy;
     }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
 }

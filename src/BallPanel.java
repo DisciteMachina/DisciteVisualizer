@@ -10,11 +10,16 @@ public class BallPanel extends JPanel implements ActionListener {
     private Timer timer;
 
     public BallPanel() {
-        ball1 = new Ball();
-        ball2  = new Ball();
-
+        initialize();
         timer = new Timer(16, this);
         timer.start();
+    }
+
+    public void initialize() {
+        do {
+            ball1 = new Ball();
+            ball2 = new Ball();
+        } while (areBallsOverLapping(ball1, ball2));
     }
 
     @Override
@@ -27,8 +32,7 @@ public class BallPanel extends JPanel implements ActionListener {
     }
 
     public void resetBall() {
-        ball1 = new Ball();
-        ball2 = new Ball();
+        initialize();
         repaint();
     }
 
@@ -41,6 +45,14 @@ public class BallPanel extends JPanel implements ActionListener {
             ball1.handleCollision(ball2);
         }
         repaint(); // Repaint panel
+    }
+
+    private boolean areBallsOverLapping(Ball ball1, Ball ball2) {
+        double distance = Math.sqrt(
+                Math.pow((ball1.getX() + ball1.getRadius()) - (ball2.getX() + ball2.getRadius()), 2) +
+                        Math.pow((ball1.getY() + ball1.getRadius()) - (ball2.getY() + ball2.getRadius()), 2)
+        );
+        return distance < (ball1.getRadius() + ball2.getRadius());
     }
 
     public Ball getBall1() {
