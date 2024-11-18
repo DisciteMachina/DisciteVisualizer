@@ -1,19 +1,24 @@
 import java.awt.*;
-import java.util.Random;
 
 class Ball  {
-    Random random = new Random();
-    int diameter = 70;
+    private static final int DIAMETER_SCALE_FACTOR = 20;
 
-    // Initial position for ball is randomized within frame
-    double x = random.nextInt(300 - diameter);
-    double y = random.nextInt(500 - diameter);
+    private double x, y, dx, dy;
+    private final double mass;
+    private final int diameter;
 
-    double dx = 5; // Horizontal speed x
-    double dy = 5; // Horizontal speed y
+    public Ball() {
+        this.mass = 1 + Math.random() * 6; // Mass in kg
+        this.diameter = (int) (DIAMETER_SCALE_FACTOR * mass);
+        this.dx = 5 / mass;
+        this.dy = 5 / mass;
+        this.x = Math.random() * (300 - diameter); // Position of ball is
+        this.y = Math.random() * (500 - diameter); // randomized in the frame
+    }
 
     // Update ball position
     public void updatePosition(int panelWidth, int panelHeight) {
+        // edges
         if (x < 0 || x > panelWidth - diameter) {
             dx = -dx;
         }
@@ -29,5 +34,9 @@ class Ball  {
     public void draw(Graphics g) {
         g.setColor(Color.WHITE);
         g.fillOval((int) x, (int) y, diameter, diameter);
+
+        g.setColor(Color.RED);
+        g.drawString("Diameter: " + diameter, (int) x, (int) y + diameter + 10);
+
     }
 }
