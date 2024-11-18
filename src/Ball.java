@@ -5,8 +5,11 @@ class Ball  {
 
     private double x, y, dx, dy;
     private final double mass;
-    private final int diameter;
-    private final int radius;
+    private final int diameter, radius;
+
+    private final Color defaultColor;
+    private Color currentColor;
+    private boolean isHit;
 
     public Ball() {
         this.mass = 1 + Math.random() * 6; // Mass in kg
@@ -16,6 +19,10 @@ class Ball  {
         this.dy = 8 / mass;
         this.x = Math.random() * (300 - diameter); // Position of ball is
         this.y = Math.random() * (500 - diameter); // randomized in the frame
+
+        this.defaultColor = Color.WHITE;
+        this.currentColor = defaultColor;
+        this.isHit = false;
     }
 
     // Update ball position
@@ -46,11 +53,25 @@ class Ball  {
         this.dy = otherBall.dy;
         otherBall.dx = tempDx;
         otherBall.dy = tempDy;
+
+        this.changeColorOnHit();
+        otherBall.changeColorOnHit();
+    }
+
+    private void changeColorOnHit() {
+        if (!isHit) {
+            isHit = true;
+            currentColor = Color.RED;
+            new javax.swing.Timer(100, e -> {
+                currentColor = defaultColor;
+                isHit = false;
+            }).start();
+        }
     }
 
     // Draw the ball
     public void draw(Graphics g) {
-        g.setColor(Color.WHITE);
+        g.setColor(currentColor);
         g.fillOval((int) x, (int) y, diameter, diameter);
     }
 
