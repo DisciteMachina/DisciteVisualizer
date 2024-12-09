@@ -1,31 +1,33 @@
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.Random;
+import java.util.Vector;
 
 public class Ball {
     Random random = new Random();
     private static final int DIAMETER_SCALE = 15;
 
     private Point position;
-    private Point velocity;
+    private Point2D velocity;
     private final int mass;
     private final int diameter;
 
     public Ball(int x, int y) {
         this.position = new Point(x, y);
-        this.velocity = new Point(0, 0); // Initial velocity
+        this.velocity = new Point2D.Double(0, 0); // Initial velocity
         this.mass = random.nextInt(8) + 1;
         this.diameter = mass * DIAMETER_SCALE;
     }
 
     public void update(int panelHeight, int panelWidth) {
-        position.x += (velocity.x);
-        position.y += (velocity.y);
+        position.x += ((int)velocity.getX());
+        position.y += ((int)velocity.getY());
 
         if (position.x < 0 || position.x + diameter > panelWidth) {
-            velocity.x = -velocity.x;
+            velocity.setLocation(-velocity.getX(), velocity.getY());
         }
         if (position.y < 0 || position.y + diameter > panelHeight) {
-            velocity.y = -velocity.y;
+            velocity.setLocation(velocity.getX(), -velocity.getY());
         }
     }
 
@@ -86,7 +88,7 @@ public class Ball {
         return position;
     }
 
-    public Point getVelocity() {
+    public Point2D getVelocity() {
         return velocity;
     }
 }
