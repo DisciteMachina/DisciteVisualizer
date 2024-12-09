@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.Random;
-import java.util.Vector;
 
 public class Ball {
     Random random = new Random();
@@ -32,15 +31,26 @@ public class Ball {
     }
 
     public void draw(Graphics g) {
+        // Not actually center
+        int centerX = position.x;
+        int centerY = position.y;
+
+        // Ball
         g.setColor(Color.WHITE);
-        g.fillOval(position.x, position.y, diameter, diameter);
+        g.fillOval(centerX, centerY, diameter, diameter);
 
+        // Center
         g.setColor(Color.RED);
-        int center = diameter / 4;
-        int centerX = position.x + diameter / 2 - center / 2;
-        int centerY = position.y + diameter / 2 - center / 2;
+        int center = diameter / 8;
+        int centerX2 = position.x + diameter / 2 - center / 2;
+        int centerY2 = position.y + diameter / 2 - center / 2;
+        g.fillOval(centerX2, centerY2, center, center);
 
-        g.fillOval(centerX, centerY, center, center);
+        // Square
+        g.setColor(Color.YELLOW);
+        int boxX = position.x;
+        int boxY = position.y;
+        g.drawRect(boxX, boxY, diameter, diameter);
     }
 
     public double getDistance(Ball otherBall) {
@@ -90,5 +100,17 @@ public class Ball {
 
     public Point2D getVelocity() {
         return velocity;
+    }
+
+    public double getDiameter() {
+        return diameter;
+    }
+
+    public double getRadius() {
+        return (double) diameter / 2;
+    }
+
+    public double getMass() {
+        return mass;
     }
 }
