@@ -1,97 +1,92 @@
 import java.awt.*;
+import java.util.Random;
 
-class Ball  {
-    private static final int DIAMETER_SCALE_FACTOR = 15;
+public class Ball {
+    Random random = new Random();
+    private static final int DIAMETER_SCALE = 15;
 
-    private double x, y, dx, dy;
-    private final double mass;
-    private final int diameter, radius;
+    private Point position;
+    private Point velocity;
+    private final int mass;
+    private final int diameter;
 
-    private final Color defaultColor;
-    private Color currentColor;
-    private boolean isHit;
-
-    public Ball() {
-        this.mass = 1 + Math.random() * 6; // Mass in kg
-        this.diameter = (int) (DIAMETER_SCALE_FACTOR * mass);
-        this.radius = diameter / 2;
-        this.dx = 8 / mass;
-        this.dy = 8 / mass;
-        this.x = Math.random() * (300 - diameter); // Position of ball is
-        this.y = Math.random() * (500 - diameter); // randomized in the frame
-
-        this.defaultColor = Color.WHITE;
-        this.currentColor = defaultColor;
-        this.isHit = false;
+    public Ball(int x, int y) {
+        this.position = new Point(x, y);
+        this.velocity = new Point(0, 0); // Initial velocity
+        this.mass = random.nextInt(8) + 1;
+        this.diameter = mass * DIAMETER_SCALE;
     }
 
-    // Update ball position
-    public void updatePosition(int panelWidth, int panelHeight) {
-        // edges
-        if (x < 0 || x > panelWidth - diameter) {
-            dx = -dx;
+    public void update(int panelHeight, int panelWidth) {
+        position.x += (velocity.x);
+        position.y += (velocity.y);
+
+        if (position.x < 0 || position.x + diameter > panelWidth) {
+            velocity.x = -velocity.x;
         }
-        if (y < 0 || y > panelHeight - diameter) {
-            dy = -dy;
-        }
-
-        x += dx;
-        y += dy;
-    }
-
-    public boolean isColliding(Ball otherBall) {
-        double distance = Math.sqrt(Math.pow((this.x + this.radius) - (otherBall.x + otherBall.radius), 2) +
-                Math.pow((this.y + this.radius) - (otherBall.y + otherBall.radius), 2));
-
-        return distance < (this.radius + otherBall.radius);
-    }
-
-    public void handleCollision(Ball otherBall) {
-        double tempDx = this.dx;
-        double tempDy = this.dy;
-        this.dx = otherBall.dx;
-        this.dy = otherBall.dy;
-        otherBall.dx = tempDx;
-        otherBall.dy = tempDy;
-
-        this.changeColorOnHit();
-        otherBall.changeColorOnHit();
-    }
-
-    private void changeColorOnHit() {
-        if (!isHit) {
-            isHit = true;
-            currentColor = Color.RED;
-            new javax.swing.Timer(100, e -> {
-                currentColor = defaultColor;
-                isHit = false;
-            }).start();
+        if (position.y < 0 || position.y + diameter > panelHeight) {
+            velocity.y = -velocity.y;
         }
     }
 
-    // Draw the ball
     public void draw(Graphics g) {
-        g.setColor(currentColor);
-        g.fillOval((int) x, (int) y, diameter, diameter);
+        g.setColor(Color.WHITE);
+        g.fillOval(position.x, position.y, diameter, diameter);
+
+        g.setColor(Color.RED);
+        int center = diameter / 4;
+        int centerX = position.x + diameter / 2 - center / 2;
+        int centerY = position.y + diameter / 2 - center / 2;
+
+        g.fillOval(centerX, centerY, center, center);
     }
 
-    public double getHorizontalSpeed() {
-        return dx;
+    public double getDistance(Ball otherBall) {
+        Point pos1 = this.getPosition();
+        Point pos2 = otherBall.getPosition();
+
+        // Distance
+        return pos1.distance(pos2);
     }
 
-    public double getVerticalSpeed() {
-        return dy;
+    public void drawDistance(Graphics g, Ball otherBall) {
+        // Get positions of both balls
+        Point pos1 = this.getPosition();
+        Point pos2 = otherBall.getPosition();
+
+        // Calculate the center of each ball
+        int centerX1 = pos1.x + diameter / 2;
+        int centerY1 = pos1.y + diameter / 2;
+
+        int centerX2 = pos2.x + otherBall.diameter / 2;
+        int centerY2 = pos2.y + otherBall.diameter / 2;
+
+        // Calculate the distances between the two centers
+        int deltaX = centerX2 - centerX1;
+        int deltaY = centerY2 - centerY1;
+
+        // Draw the horizontal line (X distance) in green
+        g.setColor(Color.GREEN);
+        g.drawLine(centerX1, centerY1, centerX1 + deltaX, centerY1);
+
+        // Draw the vertical line (Y distance) in blue
+        g.setColor(Color.BLUE);
+        g.drawLine(centerX1 + deltaX, centerY1, centerX1 + deltaX, centerY1 + deltaY);
+
+        // Draw the hypotenuse (actual distance) in red
+        g.setColor(Color.RED);
+        g.drawLine(centerX1, centerY1, centerX2, centerY2);
     }
 
-    public double getX() {
-        return x;
+    public void setVelocity(int dx, int dy) {
+        velocity.setLocation(dx, dy);
     }
 
-    public double getY() {
-        return y;
+    public Point getPosition() {
+        return position;
     }
 
-    public double getRadius() {
-        return radius;
+    public Point getVelocity() {
+        return velocity;
     }
 }

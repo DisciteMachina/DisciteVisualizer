@@ -2,24 +2,58 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Random;
 
-// Panel to manage and display the balls
 public class BallPanel extends JPanel implements ActionListener {
-    Ball ball1;
-    Ball ball2;
-    private Timer timer;
+    Random random = new Random();
+    private static ArrayList<Ball> balls;
+    private final int numOfBalls = 2;
+
+    private static final int PANEL_WIDTH = 700;
+    private static final int PANEL_HEIGHT = 800;
 
     public BallPanel() {
-        initialize();
-        timer = new Timer(16, this);
+        balls = new ArrayList<>();
+        initialize(numOfBalls);
+        Timer timer = new Timer(16, this);
         timer.start();
     }
 
-    public void initialize() {
-        do {
-            ball1 = new Ball();
-            ball2 = new Ball();
-        } while (areBallsOverLapping(ball1, ball2));
+    public void initialize(int numOfBalls) {
+        int randomX;
+        int randomY;
+        int randomdx;
+        int randomdy;
+
+        for (int i = 0; i < numOfBalls; i++) {
+            randomX = random.nextInt(PANEL_WIDTH - 400);
+            randomY = random.nextInt(PANEL_HEIGHT - 400);
+
+            Ball ball = new Ball(randomX, randomY);
+            balls.add(ball);
+
+            randomdx = random.nextInt(5) + 1;
+            randomdy = random.nextInt(5) + 1;
+
+            // Randomly set the direction for velocity
+            if (random.nextBoolean()) {
+                randomdx = -randomdx;
+            }
+            if (random.nextBoolean()) {
+                randomdy = -randomdy;
+            }
+
+            ball.setVelocity(randomdx, randomdy);
+
+            System.out.println("------------");
+            System.out.println("Ball Added: ");
+            System.out.println("X Cord: " + randomX);
+            System.out.println("Y Cord: " + randomY);
+            System.out.println("Velocity: " + randomdx + ", " + randomdy);
+            System.out.println("------------");
+            System.out.println();
+        }
     }
 
     @Override
@@ -27,39 +61,36 @@ public class BallPanel extends JPanel implements ActionListener {
         super.paintComponent(g);
         setBackground(Color.DARK_GRAY);
 
-        ball1.draw(g);
-        ball2.draw(g);
-    }
+        for (Ball ball : balls) {
+            ball.draw(g);
+        }
 
-    public void resetBall() {
-        initialize();
-        repaint();
+        for (int i = 0; i < balls.size(); i++) {
+            for (int j = i + 1; j < balls.size(); j++) {
+                Ball ball1 = balls.get(i);
+                Ball ball2 = balls.get(j);
+
+                double distance = ball1.getDistance(ball2);
+                ball1.drawDistance(g, ball2);
+            }
+        }
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ball1.updatePosition(getWidth(), getHeight());
-        ball2.updatePosition(getWidth(), getHeight());
+        int panelWidth = getWidth();
+        int panelHeight = getHeight();
 
-        if (ball1.isColliding(ball2)) {
-            ball1.handleCollision(ball2);
+        for (Ball ball : balls) {
+            ball.update(panelHeight, panelWidth);
         }
-        repaint(); // Repaint panel
+        repaint();
     }
 
-    private boolean areBallsOverLapping(Ball ball1, Ball ball2) {
-        double distance = Math.sqrt(
-                Math.pow((ball1.getX() + ball1.getRadius()) - (ball2.getX() + ball2.getRadius()), 2) +
-                        Math.pow((ball1.getY() + ball1.getRadius()) - (ball2.getY() + ball2.getRadius()), 2)
-        );
-        return distance < (ball1.getRadius() + ball2.getRadius());
-    }
-
-    public Ball getBall1() {
-        return ball1;
-    }
-
-    public Ball getBall2() {
-        return ball2;
+    public void resetBall() {
+        balls.clear();
+        initialize(numOfBalls);
+        repaint();
     }
 }
