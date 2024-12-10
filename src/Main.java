@@ -12,6 +12,26 @@ public class Main {
         // Panel to handle the balls
         BallPanel ballPanel = new BallPanel();
 
+        JButton addBall = new JButton("Add Ball");
+        addBall.setPreferredSize(new Dimension(150, 40));
+
+        addBall.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ballPanel.addBall();
+            }
+        });
+
+        JButton debugButton = new JButton("Debug");
+        debugButton.setPreferredSize(new Dimension(150, 40));
+
+        debugButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ballPanel.toggleDebugMode();
+            }
+        });
+
         JButton reloadButton = new JButton("Reload Scene");
         reloadButton.setPreferredSize(new Dimension(150, 40));
 
@@ -25,6 +45,8 @@ public class Main {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(reloadButton);
+        buttonPanel.add(debugButton);
+        buttonPanel.add(addBall);
 
         // Add components to the frame
         frame.setLayout(new BorderLayout());
