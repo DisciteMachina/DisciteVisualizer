@@ -8,58 +8,58 @@ import java.util.Random;
 
 public class BallPanel extends JPanel implements ActionListener {
     Random random = new Random();
+    private final Timer timer;
     private static ArrayList<Ball> balls;
-    private int numOfBalls = 2;
-    private int resetNumOfBalls = 2;
-
-    private static final int PANEL_WIDTH = 700;
-    private static final int PANEL_HEIGHT = 800;
+    private int count = 2;
+    private final int INITIAL_BALLS = 2;
 
     private boolean debugMode = false;
 
     public BallPanel() {
         balls = new ArrayList<>();
-        initialize(numOfBalls);
-        Timer timer = new Timer(10, this);
+        initialize(count);
+        timer = new Timer(10, this);
         timer.start();
     }
 
-    public void initialize(int numOfBalls) {
-        int randomX;
-        int randomY;
-        int randomdx;
-        int randomdy;
-
-        for (int i = 0; i < numOfBalls; i++) {
-            randomX = random.nextInt(PANEL_WIDTH - 400);
-            randomY = random.nextInt(PANEL_HEIGHT - 400);
-
-            Ball ball = new Ball(randomX, randomY);
-            balls.add(ball);
-
-            randomdx = random.nextInt(5) + 1;
-            randomdy = random.nextInt(5) + 1;
-
-            // Randomly set the direction for velocity
-            if (random.nextBoolean()) {
-                randomdx = -randomdx;
-            }
-            if (random.nextBoolean()) {
-                randomdy = -randomdy;
-            }
-
-            ball.setVelocity(randomdx, randomdy);
-
-            /*
-            System.out.println("------------");
-            System.out.println("Ball Added: ");
-            System.out.println("X Cord: " + randomX);
-            System.out.println("Y Cord: " + randomY);
-            System.out.println("Velocity: " + randomdx + ", " + randomdy);
-            System.out.println("------------");
-            System.out.println();
-            */
+    public void initialize(int count) {
+        for (int i = 0; i < count; i++) {
+            balls.add(createBall());
         }
+    }
+
+    public Ball createBall() {
+        int randomX = random.nextInt(400);
+        int randomY = random.nextInt(400);
+        Ball newBall = new Ball(randomX, randomY);
+
+        int dx = random.nextInt(5) + 1;
+        int dy = random.nextInt(5) + 1;
+        if (random.nextBoolean()) dx = -dx;
+        if (random.nextBoolean()) dy = -dy;
+
+        newBall.setVelocity(dx, dy);
+        return newBall;
+    }
+
+    public void addBall() {
+        balls.add(createBall());
+        repaint();
+    }
+
+    public void resetBall() {
+        balls.clear();
+        initialize(INITIAL_BALLS);
+        repaint();
+    }
+
+    public void setSpeed(int speed) {
+        timer.setDelay(21 - speed); // Higher slider value = faster
+    }
+
+    public void toggleDebugMode() {
+        debugMode = !debugMode;
+        repaint();
     }
 
     @Override
@@ -72,27 +72,19 @@ public class BallPanel extends JPanel implements ActionListener {
         }
 
         if (debugMode) {
+            g.setColor(Color.RED);
             for (int i = 0; i < balls.size(); i++) {
                 for (int j = i + 1; j < balls.size(); j++) {
-                    Ball ball1 = balls.get(i);
-                    Ball ball2 = balls.get(j);
-                    drawDistance(g, ball1, ball2);
+                    drawDebugLines(g, balls.get(i), balls.get(j));
                 }
             }
         }
     }
 
-    public void toggleDebugMode() {
-        debugMode = !debugMode;
-        repaint();
-    }
-
-    public void drawDistance(Graphics g, Ball ball1, Ball ball2) {
-        // Get positions of both balls
+    public void drawDebugLines(Graphics g, Ball ball1, Ball ball2) {
         Point pos1 = ball1.getPosition();
         Point pos2 = ball2.getPosition();
 
-        // Calculate the center of each ball
         int centerX1 = (int) (pos1.x + ball1.getRadius());
         int centerY1 = (int) (pos1.y + ball1.getRadius());
 
@@ -103,28 +95,28 @@ public class BallPanel extends JPanel implements ActionListener {
         int deltaX = centerX2 - centerX1;
         int deltaY = centerY2 - centerY1;
 
-        // Draw the horizontal line (X distance) in green
+        // Draw the horizontal line
         g.setColor(Color.GREEN);
         g.drawLine(centerX1, centerY1, centerX1 + deltaX, centerY1);
 
-        // Draw the vertical line (Y distance) in blue
+        // Draw the vertical line
         g.setColor(Color.BLUE);
         g.drawLine(centerX1 + deltaX, centerY1, centerX1 + deltaX, centerY1 + deltaY);
 
-        // Draw the hypotenuse (actual distance) in red
+        // Draw the hypotenuse
         g.setColor(Color.RED);
         g.drawLine(centerX1, centerY1, centerX2, centerY2);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        int panelWidth = getWidth();
-        int panelHeight = getHeight();
-
-        for (Ball ball : balls) {
-            ball.update(panelHeight, panelWidth);
+        int steps = 2;
+        for (int step = 0; step < steps; step++) {
+            for (Ball ball : balls) {
+                ball.update(getHeight(), getWidth());
+            }
+            checkCollisions();
         }
-        checkCollisions();
         repaint();
     }
 
@@ -152,7 +144,6 @@ public class BallPanel extends JPanel implements ActionListener {
         double dy = ball2.getPosition().y - ball1.getPosition().y;
         double distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Avoid division by zero in case balls are at the exact same location (unlikely but possible)
         if (distance == 0) {
             return;
         }
@@ -175,41 +166,5 @@ public class BallPanel extends JPanel implements ActionListener {
             velocity1.setLocation(velocity1.getX() + impulse * mass2 * nx, velocity1.getY() + impulse * mass2 * ny);
             velocity2.setLocation(velocity2.getX() - impulse * mass1 * nx, velocity2.getY() - impulse * mass1 * ny);
         }
-    }
-
-    public void resetBall() {
-        balls.clear();
-        initialize(resetNumOfBalls);
-        repaint();
-    }
-
-    public void addBall() {
-        int randomX = random.nextInt(PANEL_WIDTH - 400);
-        int randomY = random.nextInt(PANEL_HEIGHT - 400);
-        int randomdx = random.nextInt(5) + 1;
-        int randomdy = random.nextInt(5) + 1;
-
-        if (random.nextBoolean()) {
-            randomdx = -randomdx;
-        }
-        if (random.nextBoolean()) {
-            randomdy = -randomdy;
-        }
-
-        Ball newBall = new Ball(randomX, randomY);
-        newBall.setVelocity(randomdx, randomdy);
-        balls.add(newBall);
-
-        /*
-        System.out.println("------------");
-        System.out.println("Ball Added: ");
-        System.out.println("X Cord: " + randomX);
-        System.out.println("Y Cord: " + randomY);
-        System.out.println("Velocity: " + randomdx + ", " + randomdy);
-        System.out.println("------------");
-        System.out.println();
-         */
-
-        repaint();
     }
 }

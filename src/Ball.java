@@ -6,16 +6,18 @@ public class Ball {
     Random random = new Random();
     private static final int DIAMETER_SCALE = 15;
 
-    private Point position;
-    private Point2D velocity;
+    private final Point position;
+    private final Point2D velocity;
     private final int mass;
     private final int diameter;
+    private final Color color;
 
     public Ball(int x, int y) {
         this.position = new Point(x, y);
         this.velocity = new Point2D.Double(0, 0); // Initial velocity
-        this.mass = random.nextInt(8) + 3;
+        this.mass = random.nextInt(5) + 5;
         this.diameter = mass * DIAMETER_SCALE;
+        this.color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
     }
 
     public void update(int panelHeight, int panelWidth) {
@@ -31,13 +33,9 @@ public class Ball {
     }
 
     public void draw(Graphics g) {
-        // Not actually center
-        int centerX = position.x;
-        int centerY = position.y;
-
         // Ball
-        g.setColor(Color.WHITE);
-        g.fillOval(centerX, centerY, diameter, diameter);
+        g.setColor(color);
+        g.fillOval(position.x, position.y, diameter, diameter);
     }
 
     public double getDistance(Ball otherBall) {
